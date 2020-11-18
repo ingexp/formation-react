@@ -2,13 +2,29 @@
 
 namespace App\Entity;
 
-use App\Repository\CustomerRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CustomerRepository;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @ApiResource(
+ *  collectionOperations = {"GET" = {"path" = "/clients"},"POST"= {"path" = "/clients"}},
+ *  itemOperations = { "GET"= {"path" = "/clients/{id}"},"PUT"= {"path" = "/clients/{id}"},"DELETE"= {"path" = "/clients/{id}"} },
+ *  normalizationContext = {
+ *       "groups" = {"customers_read"}
+ * }
+ * )
+ * @ApiFilter(SearchFilter::class,properties={"firstName","lastName"})
  */
 class Customer
 {
@@ -16,38 +32,86 @@ class Customer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"customers_read","invoices_read"})
+     * @Assert\NotBlank(message="Le champs firstname ne peut pas être vide")
+     * @Assert\Length(
+     * min = 3,
+     * minMessage = "Le champs firstName doit avoir un minimum 3 caractères",
+     * 
+     * )
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"customers_read","invoices_read"})
+     * @Assert\NotBlank(message="Le champs lastname ne peut pas être vide")
+     * @Assert\Length(
+     * min = 3,
+     * minMessage = "Le champs lastName doit avoir un minimum 3 caractères",
+     * 
+     * )
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"invoices_read"})
+     * @Assert\NotBlank(message="Le champs Email ne peut pas être vide")
+     * @Assert\Email(message="L'adresse email doit être valide")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"customers_read","invoices_read"})
      */
     private $company;
 
     /**
      * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
+     * @Groups({"customers_read"})
+     * @ApiSubresource
      */
     private $invoices;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
+     * @Groups({"customers_read","invoices_read"})
+     * @Assert\NotBlank(message="L'utilisateur est obligatoire")
      */
     private $user;
+
+    /**
+     * @Groups({"customers_read"})
+     */
+    public function getTotalAmout():float
+    {
+
+        return array_reduce($this->invoices->toArray(), function ($total,$invoice){
+            return $total + $invoice->getAmout();
+        },0);
+    }
+
+    /**
+     * @Groups({"customers_read"})
+     * @return float
+     */
+    public function getUnpaidAmount():float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total,$invoice){
+
+            return $total + ($invoice->getStatus() === "PAID" || $invoice->getStatus() === "CANCELLED" ? 0 : $invoice->getAmout());
+        }, 0   
+    );
+    }
+
 
     public function __construct()
     {

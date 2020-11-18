@@ -2,11 +2,26 @@
 
 namespace App\Entity;
 
-use App\Repository\InvoiceRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\InvoiceRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
+ * @ApiResource(
+ * attributes = {
+ * "pagination_enabled" = false,
+ * "order" : {"amout": "desc"}
+ * },
+ * normalizationContext = {
+ *  "groups" = {"invoices_read"}
+ * },
+ * denormalizationContext = {
+ *  "disable_type_enforcement" = true
+ * }
+ * )
  */
 class Invoice
 {
@@ -19,27 +34,41 @@ class Invoice
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"invoices_read","customers_read"})
+     * @Assert\NotBlank(message="Le montant est obligatoire")
+     * @Assert\Type(type="numeric", message="Le montant doit être au format numérique")
      */
     private $amout;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"invoices_read","customers_read"})
+     * @Assert\DateTime(message="La date doit être au format YYYY-MM-DD")
+     * @Assert\NotBlank(message="La date est obligatoire")
      */
     private $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"invoices_read","customers_read"})
+     * @Assert\NotBlank(message="Le statut est obligatoire")
+     * @Assert\Choice(choices={"SENT", "PAID", "CANCELLED"}, message="Le status doit etre un SENT; PAID, CANCELLED")
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="invoices")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"invoices_read"})
+     * @Assert\NotBlank(message="La client est obligatoire")
      */
     private $customer;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read"})
+     * @Assert\NotBlank(message="La chrono est obligatoire")
+     * @Assert\Type(type="numeric", message="Le chrono doit être au format numérique")
      */
     private $chrono;
 
@@ -53,7 +82,7 @@ class Invoice
         return $this->amout;
     }
 
-    public function setAmout(float $amout): self
+    public function setAmout( $amout): self
     {
         $this->amout = $amout;
 
@@ -65,7 +94,7 @@ class Invoice
         return $this->sentAt;
     }
 
-    public function setSentAt(\DateTimeInterface $sentAt): self
+    public function setSentAt( $sentAt): self
     {
         $this->sentAt = $sentAt;
 
@@ -101,7 +130,7 @@ class Invoice
         return $this->chrono;
     }
 
-    public function setChrono(int $chrono): self
+    public function setChrono( $chrono): self
     {
         $this->chrono = $chrono;
 
