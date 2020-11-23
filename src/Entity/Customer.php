@@ -32,7 +32,7 @@ class Customer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * 
+     * @Groups({"customers_read","invoices_read"})
      */
     private $id;
 
@@ -62,7 +62,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"invoices_read"})
+     * @Groups({"invoices_read","customers_read"})
      * @Assert\NotBlank(message="Le champs Email ne peut pas être vide")
      * @Assert\Email(message="L'adresse email doit être valide")
      */

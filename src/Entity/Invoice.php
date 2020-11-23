@@ -29,6 +29,7 @@ class Invoice
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read","customers_read"})
      */
     private $id;
 
