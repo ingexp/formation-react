@@ -16,20 +16,23 @@ const Pagination = ({currentPage, itemPerPage, length, onPageChanged}) => {
     }
 
 
-    return (    <ul className="pagination pagination-sm">
-    <li className={ currentPage <= 1 ? "disabled":"" }><a  href="javascript:;"
-            onClick={() => onPageChanged(currentPage-1, pageCount)}>&laquo;</a></li>
+    return (    <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <           div className="btn-group mr-2" role="group" aria-label="First group"></div>
+      
+                    <li className={ currentPage <= 1 ? "btn btn-secondary disabled":"btn btn-secondary " }><a  href="javascript:;"
+                            onClick={() => onPageChanged(currentPage-1, pageCount)}>&laquo;</a></li>
 
-        { pages.map( page => <li key={page} className={ (currentPage === page ?"active":"" ) }>
-            <a 
-           href="javascript:;"
-            onClick={() => onPageChanged(page, pageCount)}>{page}
-            </a></li> )}
-    
-            
-    <li className={ currentPage >= pageCount ? "disabled":"" }  ><a  href="javascript:;"
-            onClick={() => onPageChanged(currentPage + 1, pageCount)}>&raquo;</a></li>
-    </ul> );
+                        { pages.map( page => <li key={page} className={ (currentPage === page ?" btn btn-secondaryactive":"btn btn-secondary" ) }>
+                            <a 
+                        href="javascript:;"
+                            onClick={() => onPageChanged(page, pageCount)}>{page}
+                            </a></li> )}
+                    
+                            
+                    <li className={ currentPage >= pageCount ? "btn btn-secondary disabled":"btn btn-secondary" }  ><a  href="javascript:;"
+                            onClick={() => onPageChanged(currentPage + 1, pageCount)}>&raquo;</a></li>
+                    </div>
+         );
 }
  
 Pagination.getData = (items, currentPage, itemPerPage) =>{

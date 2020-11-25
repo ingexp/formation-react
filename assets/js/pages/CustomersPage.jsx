@@ -74,7 +74,7 @@ const itemPerPage = 10;
 const filtredCustomers = customers.filter(c => c.firstName.toLowerCase().includes(search.toLowerCase().trim()) 
                             || c.lastName.toLowerCase().includes(search.toLowerCase().trim())
                             || c.email.toLowerCase().includes(search.toLowerCase().trim())
-                            || c.company.toLowerCase().includes(search.toLowerCase().trim())
+                            || (c.company && c.company.toLowerCase().includes(search.toLowerCase().trim()))
                             
                             );
 const paginatedCustomers = Pagination.getData(filtredCustomers, currentPage, itemPerPage);
@@ -111,7 +111,7 @@ const handleSearch = event =>{
                 <td>{customer.id}</td>
                 <td><a href="#">{customer.firstName} {customer.lastName}</a></td>
                 <td>{customer.email}</td>
-                <td>{customer.company}</td>
+                <td>{customer.company ? customer.company : "Null"}</td>
                 <td className="text-center">
                   <span className="badge badge-primary">
                   {customer.invoices.length}

@@ -1,35 +1,58 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { NavLink } from 'react-router-dom';
+import AuthContext from '../contexts/AuthContext';
+import AuthApi from '../services/AuthApi';
 
-const Navbar = (props) => {
-    return ( 
-    <nav className="navbar navbar-default">
-    <div className="container-fluid">
-      <div className="navbar-header">
-        <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-          <span className="sr-only">Toggle navigation</span>
-          <span className="icon-bar"></span>
-          <span className="icon-bar"></span>
-          <span className="icon-bar"></span>
-        </button>
-        <a className="navbar-brand" href="#">SymReact</a>
-      </div>
-  
-      <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul className="nav navbar-nav">
+
+const Navbar = ({history}) => {
+
+  const {isAuthenticated, setIsAuthenticated} = useContext(AuthContext);
+  const handleLogout = () => {
+
+    AuthApi.logout();
+    setIsAuthenticated(false);
+    history.push("/Login");
+  }
+
+
+    return (  
+<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+  <NavLink className="navbar-brand" to="/">SymReact</NavLink>
+  <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+    <span className="navbar-toggler-icon"></span>
+  </button>
+
+  <div className="collapse navbar-collapse" id="navbarColor02">
+    <ul className="navbar-nav mr-auto">
+      <li className="nav-item">
+        <NavLink className="nav-link" to="/customers">Clients
          
-          <li><a href="#">Clients</a></li>
-          <li><a href="#">Factures</a></li>
-        </ul>
-       
-        <ul className="nav navbar-nav navbar-right">
-         
-          <li><a href="#">Inscription</a></li>
-          <li><a href="#" className="btn btn-success">Connexion</a></li>
-          <li><a href="#" className="btn btn-danger">Déconnexion</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav> );
+        </NavLink>
+      </li>
+      <li className="nav-item">
+        <NavLink className="nav-link" to="invoices">Factures</NavLink>
+      </li>
+    
+    </ul>
+    <form className="form-inline my-2 my-lg-0">
+      { ( !isAuthenticated && (<>
+      
+        <NavLink className="btn btn-secondary my-2 my-sm-0 mr4" to ="/Login">Inscription</NavLink>
+        <NavLink className="btn btn-success my-2 my-sm-0 mr4" to ="/Login">Connexion</NavLink>
+      
+      </> )) || ( 
+      
+      <button className="btn btn-danger my-2 my-sm-0 " onClick={handleLogout}>Déconnexion</button>
+      )}
+     
+      
+    </form>
+  </div>
+</nav>
+    );
+
+
+
 }
  
 export default Navbar;
