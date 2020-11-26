@@ -32,7 +32,7 @@ const Navbar = ({history}) => {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="invoices">Factures</NavLink>
+        <NavLink className="nav-link" to="/invoices">Factures</NavLink>
       </li>
     
     </ul>

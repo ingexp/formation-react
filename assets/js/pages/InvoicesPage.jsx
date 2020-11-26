@@ -2,6 +2,7 @@ import React, { useEffect,useState } from 'react';
 import Pagination from '../components/Pagination';
 import axios from 'axios';
 import moment from 'moment';
+import { INVOICES_API } from '../Config';
 
 
 const STATUS_CLASSES = {
@@ -28,7 +29,7 @@ const InvoicesPage = (props) => {
 
   
             try{
-             const data =  await axios.get("http://127.0.0.1:8000/api/invoices")
+             const data =  await axios.get(INVOICES_API)
                          .then(reponse => reponse.data["hydra:member"]);
 
              setInvoices(data)
@@ -53,7 +54,7 @@ const InvoicesPage = (props) => {
         setInvoices(invoices.filter(invoice => invoice.id !== id));
          try{
 
-            await axios.delete("http://localhost:8000/api/invoicess/"+id);
+            await axios.delete(INVOICES_API+"/"+id);
 
            
 

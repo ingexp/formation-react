@@ -70,9 +70,9 @@ const CustomerPage = ({history, match}) => {
                 
 
             }
-            
-            history.replace("/customers");
             setErrors({});
+            history.replace("/customers");
+           
 
         }catch({response}){
             const {violations} = response.data;

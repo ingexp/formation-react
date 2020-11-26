@@ -2,6 +2,7 @@ import Axios from 'axios';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Field from '../components/forms/Field';
+import { USERS_API } from '../Config';
 const RegisterPage = (props) => {
 
     const [user,setUser] = useState({
@@ -42,7 +43,7 @@ const RegisterPage = (props) => {
 
         try{
 
-            const data = await Axios.post("http://localhost:8000/api/users", user);
+            const data = await Axios.post(USERS_API, user);
             setErrors({});
             props.history.replace("/login");
            
