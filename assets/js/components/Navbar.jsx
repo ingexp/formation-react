@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import AuthContext from '../contexts/AuthContext';
 import AuthApi from '../services/AuthApi';
 
@@ -11,6 +12,7 @@ const Navbar = ({history}) => {
 
     AuthApi.logout();
     setIsAuthenticated(false);
+    toast.info("Vous êtes désormais déconnecté ");
     history.push("/Login");
   }
 
@@ -37,7 +39,7 @@ const Navbar = ({history}) => {
     <form className="form-inline my-2 my-lg-0">
       { ( !isAuthenticated && (<>
       
-        <NavLink className="btn btn-secondary my-2 my-sm-0 mr4" to ="/Login">Inscription</NavLink>
+        <NavLink className="btn btn-secondary my-2 my-sm-0 mr4" to ="/register">Inscription</NavLink>
         <NavLink className="btn btn-success my-2 my-sm-0 mr4" to ="/Login">Connexion</NavLink>
       
       </> )) || ( 

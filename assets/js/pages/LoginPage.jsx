@@ -2,6 +2,11 @@ import React, {useContext, useState} from 'react';
 import axios from'axios';
 import AuthApi from '../services/AuthApi';
 import AuthContext from '../contexts/AuthContext';
+import Field from '../components/forms/Field';
+import { toast } from 'react-toastify';
+
+
+
 const LoginPage = ({history}) => {
     const {setIsAuthenticated} = useContext(AuthContext);
     const [credentials, setCredentials] = useState({
@@ -33,6 +38,7 @@ const LoginPage = ({history}) => {
             
             setError("");
             setIsAuthenticated(true);
+            toast.success("Vous êtes connecté :D");
             history.replace("/customers");
         }catch(error){
 
@@ -46,31 +52,12 @@ const LoginPage = ({history}) => {
 
         <form onSubmit={handleSubmit}>
 
-            <div className="form-group">
-                <label htmlFor="username">Adresse Email</label>
-                <input type="email" 
-                    value={credentials.username}
-                    onChange={ handleChange}
-                    className= { "form-control" + (error  && " is-invalid") }
-                    id="username" 
-                    name="username" 
-                    placeholder="Adresse Email de connexion"
-                    
-                    />
-                   { error && <p className="invalid-feedback">{error}</p>  }
-            </div>
+            <Field label="Adresse Email" type="email" value={credentials.username} onChange={ handleChange} 
+                        name="username" placeholder="Adresse Email de connexion" error={error}/>
             
-            <div className="form-group">
-                <label htmlFor="password">Mot de passe</label>
-                <input type="password" 
-                    value={credentials.password}
-                    onChange={ handleChange}
-                    className="form-control" 
-                    id="password" 
-                    name="password" 
-                    placeholder="Mot de passe"
-                    />
-            </div>
+            <Field label="Mot de passe" type="password" value={credentials.password} onChange={ handleChange} 
+                        name="password" placeholder="Mot de passe" error=""/>
+            
             <div className="form-group">
                 <button type="submit" className="btn btn-success">Se connecter</button>
             </div>

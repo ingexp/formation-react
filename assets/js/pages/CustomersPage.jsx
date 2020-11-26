@@ -1,5 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import TableLoader from '../components/loaders/tableLoader';
 import Pagination from '../components/Pagination';
 import CustomersApi from '../services/CustomersApi';
 
@@ -8,6 +10,8 @@ const CustomersPage = (props) => {
 const [customers, setCustomers] = useState([]);
 const [currentPage, setCurrentPage] = useState(1);
 const [search, setSearch] = useState('');
+const [loading,setLoading] = useState(true);
+
 
 
 const recupererClients = async() => {
@@ -15,7 +19,9 @@ const recupererClients = async() => {
     try{
 
         const data = await  CustomersApi.findAll();
+       
         setCustomers(data);
+        setLoading(false);
     }catch(error){
 
         console.log(error.response)
@@ -27,10 +33,7 @@ useEffect( ()=>{
 
     recupererClients();
 
-    /*CustomersApi.findAll()
-        .then(data => setCustomers(data))
-        .catch(error => console.log(error.response));
-    */
+  
     },[]);
 
 
@@ -49,11 +52,7 @@ const handleDelete = async id => {
 
     }
 
-  /*  CustomersApi.delete(id)
-        .catch(error => {
-            setCustomers(origanaleTable);
-            console.log(error.response);
-        });*/
+  
 }
 
 const handleCurrentPage = (page,pageCount) => {
@@ -87,8 +86,12 @@ const handleSearch = event =>{
     setCurrentPage(1);
 
 }
+
     return ( <>
+    <div className="d-flex justify-content-between align-items-center">
     <h1>Liste des clients</h1>
+    <Link to="/customers/new" className="btn btn-primary">Créer un nouveau client</Link>
+    </div>
     <div className="form-group">
             <input className="form-control" type="text" placeholder="Recherche ..." onChange={handleSearch} value={search}/>
         </div>
@@ -109,9 +112,9 @@ const handleSearch = event =>{
         <tbody>
             { paginatedCustomers.map(customer => <tr key={customer.id}>
                 <td>{customer.id}</td>
-                <td><a href="#">{customer.firstName} {customer.lastName}</a></td>
+                <td><Link to={"/customers/"+customer.id}>{customer.firstName} {customer.lastName}</Link></td>
                 <td>{customer.email}</td>
-                <td>{customer.company ? customer.company : "Null"}</td>
+                <td>{customer.company ? customer.company : "-"}</td>
                 <td className="text-center">
                   <span className="badge badge-primary">
                   {customer.invoices.length}
@@ -119,6 +122,7 @@ const handleSearch = event =>{
                 </td>
                 <td className="text-center">{customer.totalAmout.toLocaleString()} $</td>
                 <td>
+                
                     <button 
                     onClick={ () => handleDelete(customer.id)}
                     disabled = {customer.invoices.length > 0 }  
@@ -129,6 +133,7 @@ const handleSearch = event =>{
         </tbody>
 
     </table>
+            { loading && <TableLoader /> }
 
     <Pagination currentPage={currentPage} itemPerPage = {itemPerPage} length={filtredCustomers.length} onPageChanged = {handleCurrentPage} />
 
